@@ -1,0 +1,10 @@
+title: Knot Data
+email: ryan.j.maguire.gr@dartmouth.edu
+description: Tables of knot invariants.
+baseurl: "/"
+url: "https://knots.dartmouth.edu"
+
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
