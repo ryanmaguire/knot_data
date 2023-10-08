@@ -7,7 +7,7 @@ This site contains a collection of data that knot theorists may find useful
 in their experiments. This includes tables of DT codes for all prime knots
 with crossing number bounded by 19 and several knot polynomials.
 
-## Knot Data
+## **Knot Data**
 
 The data sets are compressed using `xz` to save space. For large files over
 `30MB` the maximum level of compression is used. This results in a
@@ -23,13 +23,13 @@ using `GNOME` as your desktop environment you can right-click the file and hit
 `Windows` users will need to download a recent version of
 [**7-zip**](https://7-zip.org/).
 
-### Data Sets
+### **Data Sets**
 
 [**Jones Polynomial**](./jones/)<br />
 [**HOMFLY-PT Polynomial**](./homfly/)<br />
 [**Khovanov Polynomial**](./khovanov/)
 
-## Tools
+## **Tools**
 
 The data was created using a combination of several libraries. If you wish
 to reproduce this data, you'll need these installed.
