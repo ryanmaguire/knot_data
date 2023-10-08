@@ -25,9 +25,9 @@ using `GNOME` as your desktop environment you can right-click the file and hit
 
 ### **Data Sets**
 
-[**Jones Polynomial**](./jones/)<br />
-[**HOMFLY-PT Polynomial**](./homfly/)<br />
-[**Khovanov Polynomial**](./khovanov/)
+[**Jones Polynomial**](./jones_polynomial/)<br />
+[**HOMFLY-PT Polynomial**](./homfly_polynomial/)<br />
+[**Khovanov Polynomial**](./khovanov_polynomial/)
 
 ## **Tools**
 

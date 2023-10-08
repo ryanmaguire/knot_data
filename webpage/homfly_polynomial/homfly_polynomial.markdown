@@ -1,6 +1,6 @@
 ---
 layout: default
-permalink: /homfly/
+permalink: /homfly_polynomial/
 ---
 [**Back**](../)
 

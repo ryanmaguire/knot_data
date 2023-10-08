@@ -1,6 +1,6 @@
 ---
 layout: default
-permalink: /khovanov/
+permalink: /khovanov_polynomial/
 ---
 [**Back**](../)
 
