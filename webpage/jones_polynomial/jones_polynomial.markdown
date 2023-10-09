@@ -49,7 +49,7 @@ The Jones polynomial normalizes the Kauffman bracket by introducing a scale
 factor in terms of the *writhe* of the knot. The (unnormalized) Jones polynomial
 is given by:
 \begin{equation}
-    J(L)=(-1)^{n_{-}}q^{n_{+}-n_{-}}
+    J(L)=(-1)^{n_{-}}q^{n_{+}-n_{-}}\langle{K}\rangle
 \end{equation}
 where $$n_{\pm}$$ are the number of positive and negative crossings in $$L$$,
 respectively. The difference $$n_{+}-n_{-}$$ is called the *writhe* of $$L$$.
