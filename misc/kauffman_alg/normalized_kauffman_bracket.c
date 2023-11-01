@@ -19,37 +19,40 @@
 #include <stdlib.h>
 #include "kauffman.h"
 
-/*  Returns an array ind where ind[n] is a struct containing the indices of   *
- *  the under and over crossings of the nth crossing.                         */
-struct crossing_indices *get_indices(const struct knot *K)
+struct laurent_polynomial normalized_kauffman_bracket(const struct knot *K)
 {
-    unsigned int n;
-    struct crossing_indices *ind;
+    unsigned int n, weight, n_circles, n_elements, shift;
+    const struct crossing_indices * const ind = get_indices(K);
+    struct laurent_polynomial out;
 
-    /*  Check for invalid inputs.                                             */
-    if (!K)
-        return NULL;
+    signed int kauffman_coeffs[MAX_POLY_SIZE];
 
-    /*  If there are no crossings, return an empty array (a NULL pointer).    */
-    if (K->number_of_crossings == 0U)
-        return NULL;
+    for (n = 0U; n < MAX_POLY_SIZE; ++n)
+        kauffman_coeffs[n] = 0U;
 
-    /*  Allocate memory for the array.                                        */
-    ind = malloc(sizeof(*ind)*K->number_of_crossings);
-
-    /*  Check if malloc failed.                                               */
-    if (!ind)
-        return NULL;
-
-    /*  Loop through and save the indices.                                    */
-    for (n = 0U; n < 2U * K->number_of_crossings; ++n)
+    for (n = 0; n < (1U << K->number_of_crossings); ++n)
     {
-        if (K->type[n] == over_crossing)
-            ind[K->crossing_number[n]].over = n;
-        else
-            ind[K->crossing_number[n]].under = n;
+        weight = hamming_weight(n);
+        n_circles = circle_count(K, ind, n);
+        add_normalized_kauffman_summand(n_circles, weight,
+                                        DEGREE_SHIFT, kauffman_coeffs);
     }
 
-    return ind;
+    out.lowest_degree = MIN_DEGREE;
+    out.highest_degree = MAX_DEGREE;
+
+    while (kauffman_coeffs[out.lowest_degree + DEGREE_SHIFT] == 0)
+        out.lowest_degree++;
+
+    while (kauffman_coeffs[out.highest_degree + DEGREE_SHIFT] == 0)
+        out.highest_degree--;
+
+    n_elements = (unsigned int)(out.highest_degree - out.lowest_degree) + 1U;
+    shift = (unsigned int)(DEGREE_SHIFT + out.lowest_degree);
+    out.coeffs = malloc(sizeof(*out.coeffs) * n_elements);
+
+    for (n = 0U; n < n_elements; ++n)
+        out.coeffs[n] = kauffman_coeffs[n + shift];
+
+    return out;
 }
-/*  End of get_indices.                                                       */

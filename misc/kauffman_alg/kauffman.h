@@ -1,3 +1,21 @@
+/******************************************************************************
+ *                                  LICENSE                                   *
+ ******************************************************************************
+ *  This file is part of knot_data.                                           *
+ *                                                                            *
+ *  knot_data is free software: you can redistribute it and/or modify         *
+ *  it under the terms of the GNU General Public License as published by      *
+ *  the Free Software Foundation, either version 3 of the License, or         *
+ *  (at your option) any later version.                                       *
+ *                                                                            *
+ *  knot_data is distributed in the hope that it will be useful,              *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
+ *  GNU General Public License for more details.                              *
+ *                                                                            *
+ *  You should have received a copy of the GNU General Public License         *
+ *  along with knot_data.  If not, see <https://www.gnu.org/licenses/>.       *
+ ******************************************************************************/
 #ifndef KAUFFMAN_H
 #define KAUFFMAN_H
 
@@ -52,6 +70,11 @@ extern struct crossing_indices *get_indices(const struct knot *K);
 extern struct laurent_polynomial kauffman_bracket(const struct knot *K);
 extern void print_poly(const struct laurent_polynomial *P);
 extern struct knot knot_from_gauss_code(const char *str);
+extern struct laurent_polynomial jones(const struct knot *K);
+extern struct laurent_polynomial normalized_jones(const struct knot *K);
+
+extern struct laurent_polynomial
+normalized_kauffman_bracket(const struct knot *K);
 
 extern unsigned int
 circle_count(const struct knot *K,
@@ -63,5 +86,11 @@ add_kauffman_summand(unsigned int cycles,
                      unsigned int weight,
                      unsigned int degree_shift,
                      signed int *coeffs_array);
+
+extern void
+add_normalized_kauffman_summand(unsigned int cycles,
+                                unsigned int weight,
+                                unsigned int degree_shift,
+                                signed int *coeffs_array);
 
 #endif

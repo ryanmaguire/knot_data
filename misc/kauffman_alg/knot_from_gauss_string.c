@@ -1,9 +1,27 @@
+/******************************************************************************
+ *                                  LICENSE                                   *
+ ******************************************************************************
+ *  This file is part of knot_data.                                           *
+ *                                                                            *
+ *  knot_data is free software: you can redistribute it and/or modify         *
+ *  it under the terms of the GNU General Public License as published by      *
+ *  the Free Software Foundation, either version 3 of the License, or         *
+ *  (at your option) any later version.                                       *
+ *                                                                            *
+ *  knot_data is distributed in the hope that it will be useful,              *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
+ *  GNU General Public License for more details.                              *
+ *                                                                            *
+ *  You should have received a copy of the GNU General Public License         *
+ *  along with knot_data.  If not, see <https://www.gnu.org/licenses/>.       *
+ ******************************************************************************/
 #include <ctype.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <libtmpl/include/tmpl_string.h>
 #include "kauffman.h"
 
-struct knot knot_from_gauss_code(const char *str)
+struct knot knot_from_gauss_code(const char *code)
 {
     enum crossing_sign sign_buffer[2U * MAX_CROSSINGS];
     enum crossing_type type_buffer[2U * MAX_CROSSINGS];
@@ -12,10 +30,15 @@ struct knot knot_from_gauss_code(const char *str)
     unsigned int n;
     struct knot out;
     const char *tmp;
+    char *whole_string = tmpl_String_Duplicate(code);
+    char *str = whole_string;
+
+    tmpl_String_Remove_Whitespace(str);
+    tmpl_String_Make_Lower_Case(str);
 
     while (*str)
     {
-        if (tolower(*str) == 'o')
+        if (*str == 'o')
             type_buffer[index] = over_crossing;
         else
             type_buffer[index] = under_crossing;
@@ -49,5 +72,6 @@ struct knot knot_from_gauss_code(const char *str)
         out.sign[n] = sign_buffer[n];
     }
 
+    free(whole_string);
     return out;
 }

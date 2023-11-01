@@ -16,40 +16,27 @@
  *  You should have received a copy of the GNU General Public License         *
  *  along with knot_data.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************/
-#include <stdlib.h>
-#include "kauffman.h"
+#ifndef KNOT_DATA_H
+#define KNOT_DATA_H
 
-/*  Returns an array ind where ind[n] is a struct containing the indices of   *
- *  the under and over crossings of the nth crossing.                         */
-struct crossing_indices *get_indices(const struct knot *K)
-{
-    unsigned int n;
-    struct crossing_indices *ind;
+/*  The Figure-Eight knot.                                                    */
+#define FIGURE_EIGHT "O0- U1+ O2+ U0- O3- U2+ O1+ U3-"
 
-    /*  Check for invalid inputs.                                             */
-    if (!K)
-        return NULL;
+/*  Both the right-handed and left-handed trefoils.                           */
+#define RIGHT_HANDED_TREFOIL "O0+ U1+ O2+ U0+ O1+ U2+"
+#define LEFT_HANDED_TREFOIL "O0- U1- O2- U0- O1- U2-"
 
-    /*  If there are no crossings, return an empty array (a NULL pointer).    */
-    if (K->number_of_crossings == 0U)
-        return NULL;
+/*  The right and left-handed chain-link fence knots (virtual knots, genus 1.)*/
+#define RIGHT_HANDED_CHAIN_LINK_FENCE "O0+ O1+ U0+ U1+"
+#define LEFT_HANDED_CHAIN_LINK_FENCE "O0- O1- U0- U1-"
 
-    /*  Allocate memory for the array.                                        */
-    ind = malloc(sizeof(*ind)*K->number_of_crossings);
+/*  T(25, 2) torus knot. Large knot, 25 crossings, takes a few seconds. The   *
+ *  previous knots can have their Jones polynomials computed almost instantly *
+ *  (the computation takes a few milliseconds).                               */
+#define T25_2_TORUS_KNOT "U0+ O1+ U2+ O3+ U4+ O5+ U6+ O7+ U8+ O9+ U10+ " \
+                         "O11+ U12+ O13+ U14+ O15+ U16+ O17+ U18+ O19+ " \
+                         "U20+ O21+ U22+ O23+ U24+ O0+ U1+ O2+ U3+ O4+ " \
+                         "U5+ O6+ U7+ O8+ U9+ O10+ U11+ O12+ U13+ O14+ " \
+                         "U15+ O16+ U17+ O18+ U19+ O20+ U21+ O22+ U23+ O24+"
 
-    /*  Check if malloc failed.                                               */
-    if (!ind)
-        return NULL;
-
-    /*  Loop through and save the indices.                                    */
-    for (n = 0U; n < 2U * K->number_of_crossings; ++n)
-    {
-        if (K->type[n] == over_crossing)
-            ind[K->crossing_number[n]].over = n;
-        else
-            ind[K->crossing_number[n]].under = n;
-    }
-
-    return ind;
-}
-/*  End of get_indices.                                                       */
+#endif

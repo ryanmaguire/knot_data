@@ -1,3 +1,21 @@
+/******************************************************************************
+ *                                  LICENSE                                   *
+ ******************************************************************************
+ *  This file is part of knot_data.                                           *
+ *                                                                            *
+ *  knot_data is free software: you can redistribute it and/or modify         *
+ *  it under the terms of the GNU General Public License as published by      *
+ *  the Free Software Foundation, either version 3 of the License, or         *
+ *  (at your option) any later version.                                       *
+ *                                                                            *
+ *  knot_data is distributed in the hope that it will be useful,              *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
+ *  GNU General Public License for more details.                              *
+ *                                                                            *
+ *  You should have received a copy of the GNU General Public License         *
+ *  along with knot_data.  If not, see <https://www.gnu.org/licenses/>.       *
+ ******************************************************************************/
 #include <stddef.h>
 #include "kauffman.h"
 
@@ -8,13 +26,14 @@ circle_count(const struct knot *K,
              const struct crossing_indices *ind,
              unsigned int resolution)
 {
-    unsigned int number_of_circles, n, k, m;
-    unsigned char dir, crossing_resolution;
+    unsigned int number_of_circles, n, road_index, crossing, code_index;
+    unsigned char direction, crossing_resolution, road_number;
+    enum crossing_sign sign;
 
     /*  The direction is stored as an unsigned char. There are two            *
      *  possibilities: forwards and backwards.                                */
-    const unsigned char backward = 0x00U;
-    const unsigned char forward = 0x01U;
+    const unsigned char forward = 0x00U;
+    const unsigned char backward = 0x01U;
 
     /*  The empty knot has zero circles.                                      */
     if (!K)
@@ -34,172 +53,124 @@ circle_count(const struct knot *K,
     /*  Initialize number_of_circles to zero.                                 */
     number_of_circles = 0U;
 
-    for (n = 0U; n < 2U*K->number_of_crossings; ++n)
+    for (n = 0U; n < 4U*K->number_of_crossings; ++n)
     {
-        k = 4U*K->crossing_number[n];
-
-        /*  Each crossing has four entrances. Bottom left, bottom right, top  *
-         *  left, top right. Check which one's we have visited.               */
-        for (m = 0U; m < 3; ++m)
-        {
-            if (!have_visited[k])
-                break;
-            else
-                ++k;
-        }
-
-        if (have_visited[k])
+        if (have_visited[n])
             continue;
 
-        if (m < 2U)
-            dir = forward;
-        else
-            dir = backward;
+        road_index = n;
+        road_number = road_index & 0x03U;
+        direction = road_number >> 1U;
+        crossing = road_index >> 2U;
 
-        m = n;
+        /*  The sign is the same for over and under crossings. Grab either.   */
+        sign = K->sign[ind[crossing].over];
 
-        while (!have_visited[k])
+        if (sign == positive_crossing)
         {
-            crossing_resolution = (resolution >> K->crossing_number[m]) & 0x01U;
-            have_visited[k] = 0x01U;
-
-            if (K->sign[m] == positive_crossing)
-            {
-                if (K->type[m] == over_crossing)
-                {
-                    if (crossing_resolution == 0x00U)
-                    {
-                        if (dir == forward)
-                            k = 4U*K->crossing_number[m] + 3U;
-                        else
-                            k = 4U*K->crossing_number[m] + 1U;
-                    }
-                    else
-                    {
-                        if (dir == forward)
-                            k = 4U*K->crossing_number[m] + 1U;
-                        else
-                            k = 4U*K->crossing_number[m] + 3U;
-
-                        dir = 0x01U - dir;
-                    }
-                    m = ind[K->crossing_number[m]].under;
-                }
-                else
-                {
-                    if (crossing_resolution == 0x00U)
-                    {
-                        if (dir == forward)
-                            k = 4U*K->crossing_number[m] + 2U;
-                        else
-                            k = 4U*K->crossing_number[m];
-                    }
-                    else
-                    {
-                        if (dir == forward)
-                            k = 4U*K->crossing_number[m];
-                        else
-                            k = 4U*K->crossing_number[m] + 2U;
-
-                        dir = 0x01U - dir;
-                    }
-                    m = ind[K->crossing_number[m]].over;
-                }
-            }
+            if (road_number & 0x01U)
+                code_index = ind[crossing].under;
             else
-            {
-                if (K->type[m] == over_crossing)
-                {
-                    if (crossing_resolution == 0x00U)
-                    {
-                        if (dir == forward)
-                            k = 4U*K->crossing_number[m] + 2U;
-                        else
-                            k = 4U*K->crossing_number[m];
-                    }
-                    else
-                    {
-                        if (dir == forward)
-                            k = 4U*K->crossing_number[m];
-                        else
-                            k = 4U*K->crossing_number[m] + 2U;
-
-                        dir = 0x01U - dir;
-                    }
-
-                    m = ind[K->crossing_number[m]].under;
-                }
-                else
-                {
-                    if (crossing_resolution == 0x00U)
-                    {
-                        if (dir == forward)
-                            k = 4U*K->crossing_number[m] + 3U;
-                        else
-                            k = 4U*K->crossing_number[m] + 1U;
-                    }
-                    else
-                    {
-                        if (dir == forward)
-                            k = 4U*K->crossing_number[m] + 1U;
-                        else
-                            k = 4U*K->crossing_number[m] + 3U;
-
-                        dir = 0x01U - dir;
-                    }
-                    m = ind[K->crossing_number[m]].over;
-                }
-            }
-
-            if (dir == forward)
-            {
-                if (m == 2U*K->number_of_crossings - 1U)
-                    m = 0U;
-                else
-                    ++m;
-            }
-            else
-            {
-                if (m == 0U)
-                    m = 2U*K->number_of_crossings - 1U;
-                else
-                    --m;
-            }
-
-            have_visited[k] = 0x01U;
-
-            k = 4U*K->crossing_number[m];
-            if (K->sign[m] == positive_crossing)
-            {
-                if (K->type[m] == over_crossing)
-                {
-                    if (dir == backward)
-                        k += 2U;
-                }
-                else
-                {
-                    if (dir == forward)
-                        k += 1U;
-                    else
-                        k += 3U;
-                }
-            }
-            else
-            {
-                if (K->type[m] == over_crossing)
-                {
-                    if (dir == forward)
-                        k += 1U;
-                    else
-                        k += 3U;
-                }
-                else
-                {
-                    if (dir == backward)
-                        k += 2U;
-                }
-            }
+                code_index = ind[crossing].over;
         }
+
+        else
+        {
+            if (road_number & 0x01U)
+                code_index = ind[crossing].over;
+            else
+                code_index = ind[crossing].under;
+        }
+
+        while (!have_visited[road_index])
+        {
+            have_visited[road_index] = 0x01U;
+            crossing_resolution = (resolution >> crossing) & 0x01U;
+
+            if (sign == positive_crossing)
+            {
+                if (crossing_resolution == 0x00U)
+                    road_number = 3U - road_number;
+                else
+                {
+                    road_number = (5U - road_number) & 0x03U;
+                    direction = 0x01U - direction;
+                }
+            }
+            else
+            {
+                if (crossing_resolution == 0x00U)
+                {
+                    road_number = (5U - road_number) & 0x03U;
+                    direction = 0x01U - direction;
+                }
+                else
+                    road_number = 3U - road_number;
+            }
+
+            have_visited[4U*crossing + road_number] = 0x01U;
+
+            if (K->type[code_index] == over_crossing)
+                code_index = ind[crossing].under;
+            else
+                code_index = ind[crossing].over;
+
+            if (direction == forward)
+            {
+                if (code_index == 2U*K->number_of_crossings - 1U)
+                    code_index = 0U;
+                else
+                    ++code_index;
+            }
+            else
+            {
+                if (code_index == 0U)
+                    code_index = 2U*K->number_of_crossings - 1U;
+                else
+                    --code_index;
+            }
+
+            if (K->sign[code_index] == positive_crossing)
+            {
+                if (K->type[code_index] == over_crossing)
+                {
+                    if (direction == backward)
+                        road_number = 2U;
+                    else
+                        road_number = 0U;
+                }
+                else
+                {
+                    if (direction == forward)
+                        road_number = 1U;
+                    else
+                        road_number = 3U;
+                }
+            }
+
+            else
+            {
+                if (K->type[code_index] == over_crossing)
+                {
+                    if (direction == forward)
+                        road_number = 1U;
+                    else
+                        road_number = 3U;
+                }
+                else
+                {
+                    if (direction == backward)
+                        road_number = 2U;
+                    else
+                        road_number = 0U;
+                }
+            }
+
+            crossing = K->crossing_number[code_index];
+            road_index = (crossing << 2U) + road_number;
+            sign = K->sign[code_index];
+        }
+
         ++number_of_circles;
     }
 

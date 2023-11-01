@@ -16,40 +16,38 @@
  *  You should have received a copy of the GNU General Public License         *
  *  along with knot_data.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************/
-#include <stdlib.h>
 #include "kauffman.h"
 
-/*  Returns an array ind where ind[n] is a struct containing the indices of   *
- *  the under and over crossings of the nth crossing.                         */
-struct crossing_indices *get_indices(const struct knot *K)
+struct laurent_polynomial normalized_jones(const struct knot *K)
 {
-    unsigned int n;
-    struct crossing_indices *ind;
+    unsigned int ind, n_terms;
+    int shift;
+    int n_plus = 0;
+    int n_minus = 0;
+    struct laurent_polynomial out = normalized_kauffman_bracket(K);
 
-    /*  Check for invalid inputs.                                             */
-    if (!K)
-        return NULL;
-
-    /*  If there are no crossings, return an empty array (a NULL pointer).    */
-    if (K->number_of_crossings == 0U)
-        return NULL;
-
-    /*  Allocate memory for the array.                                        */
-    ind = malloc(sizeof(*ind)*K->number_of_crossings);
-
-    /*  Check if malloc failed.                                               */
-    if (!ind)
-        return NULL;
-
-    /*  Loop through and save the indices.                                    */
-    for (n = 0U; n < 2U * K->number_of_crossings; ++n)
+    for (ind = 0U; ind < 2U * K->number_of_crossings; ++ind)
     {
-        if (K->type[n] == over_crossing)
-            ind[K->crossing_number[n]].over = n;
+        if (K->sign[ind] == positive_crossing)
+            n_plus++;
         else
-            ind[K->crossing_number[n]].under = n;
+            n_minus++;
     }
 
-    return ind;
+    n_plus = n_plus >> 1;
+    n_minus = n_minus >> 1;
+    shift = n_plus - 2*n_minus;
+
+    out.lowest_degree += shift;
+    out.highest_degree += shift;
+
+    if (n_minus & 1)
+    {
+        n_terms = (unsigned int)(out.highest_degree - out.lowest_degree + 1);
+
+        for (ind = 0U; ind < n_terms; ++ind)
+            out.coeffs[ind] = -out.coeffs[ind];
+    }
+
+    return out;
 }
-/*  End of get_indices.                                                       */

@@ -16,40 +16,25 @@
  *  You should have received a copy of the GNU General Public License         *
  *  along with knot_data.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************/
-#include <stdlib.h>
 #include "kauffman.h"
+#include "q_plus_q_inverse_powers.h"
 
-/*  Returns an array ind where ind[n] is a struct containing the indices of   *
- *  the under and over crossings of the nth crossing.                         */
-struct crossing_indices *get_indices(const struct knot *K)
+void
+add_normalized_kauffman_summand(unsigned int cycles,
+                                unsigned int weight,
+                                unsigned int degree_shift,
+                                signed int *coeffs_array)
 {
     unsigned int n;
-    struct crossing_indices *ind;
+    const unsigned int shift = degree_shift - cycles + weight + 1U;
+    const unsigned int number_of_terms = 2U*cycles - 1U;
+    const int * const coeffs = q_qinv_powers[cycles - 1U];
 
-    /*  Check for invalid inputs.                                             */
-    if (!K)
-        return NULL;
+    if (weight & 1U)
+        for (n = 0; n < number_of_terms; ++n)
+            coeffs_array[n + shift] -= coeffs[n];
 
-    /*  If there are no crossings, return an empty array (a NULL pointer).    */
-    if (K->number_of_crossings == 0U)
-        return NULL;
-
-    /*  Allocate memory for the array.                                        */
-    ind = malloc(sizeof(*ind)*K->number_of_crossings);
-
-    /*  Check if malloc failed.                                               */
-    if (!ind)
-        return NULL;
-
-    /*  Loop through and save the indices.                                    */
-    for (n = 0U; n < 2U * K->number_of_crossings; ++n)
-    {
-        if (K->type[n] == over_crossing)
-            ind[K->crossing_number[n]].over = n;
-        else
-            ind[K->crossing_number[n]].under = n;
-    }
-
-    return ind;
+    else
+        for (n = 0; n < number_of_terms; ++n)
+            coeffs_array[n + shift] += coeffs[n];
 }
-/*  End of get_indices.                                                       */
