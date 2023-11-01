@@ -1,3 +1,6 @@
+#ifndef Q_PLUS_Q_INVERSE_POWERS_H
+#define Q_PLUS_Q_INVERSE_POWERS_H
+
 static int q_qinv_pow00[1] = {
     1
 };
@@ -192,3 +195,16 @@ static int q_qinv_pow33[67] = {
     0, 193536720, 0, 92561040, 0, 38567100, 0, 13884156, 0, 4272048,
     0, 1107568, 0, 237336, 0, 40920, 0, 5456, 0, 528, 0, 33, 0, 1
 };
+
+
+static const int *q_qinv_powers[34] = {
+    q_qinv_pow00, q_qinv_pow01, q_qinv_pow02, q_qinv_pow03, q_qinv_pow04,
+    q_qinv_pow05, q_qinv_pow06, q_qinv_pow07, q_qinv_pow08, q_qinv_pow09,
+    q_qinv_pow10, q_qinv_pow11, q_qinv_pow12, q_qinv_pow13, q_qinv_pow14,
+    q_qinv_pow15, q_qinv_pow16, q_qinv_pow17, q_qinv_pow18, q_qinv_pow19,
+    q_qinv_pow20, q_qinv_pow21, q_qinv_pow22, q_qinv_pow23, q_qinv_pow24,
+    q_qinv_pow25, q_qinv_pow26, q_qinv_pow27, q_qinv_pow28, q_qinv_pow29,
+    q_qinv_pow30, q_qinv_pow31, q_qinv_pow32, q_qinv_pow33
+};
+
+#endif
