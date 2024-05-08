@@ -16,7 +16,7 @@ void int_matrix_init(int_matrix *mat)
     mat->n_elements = zero;
 }
 
-integer int_matrix_element(const int_matrix *mat, size_t row, size_t column)
+int int_matrix_element(const int_matrix *mat, size_t row, size_t column)
 {
     if (mat == NULL)
         return 0;
@@ -137,7 +137,7 @@ void int_matrix_swap_rows(int_matrix *mat, size_t a, size_t b)
     {
         const size_t a_ind = ind + a_shift;
         const size_t b_ind = ind + b_shift;
-        const integer tmp = mat->data[a_ind];
+        const int tmp = mat->data[a_ind];
 
         mat->data[a_ind] = mat->data[b_ind];
         mat->data[b_ind] = tmp;
@@ -162,7 +162,7 @@ void int_matrix_swap_columns(int_matrix *mat, size_t a, size_t b)
     {
         const size_t a_ind = ind*mat->n_columns + a;
         const size_t b_ind = ind*mat->n_columns + b;
-        const integer tmp = mat->data[a_ind];
+        const int tmp = mat->data[a_ind];
 
         mat->data[a_ind] = mat->data[b_ind];
         mat->data[b_ind] = tmp;
@@ -193,7 +193,7 @@ void int_matrix_row_addition(int_matrix *mat, size_t a, size_t b)
 }
 
 void
-int_matrix_scaled_row_addition(int_matrix *mat, integer n, size_t a, size_t b)
+int_matrix_scaled_row_addition(int_matrix *mat, int n, size_t a, size_t b)
 {
     const size_t zero = (size_t)0;
     size_t ind, a_shift, b_shift;
@@ -232,7 +232,7 @@ void int_matrix_print(const int_matrix *mat)
     {
         for (column = zero; column < mat->n_columns; ++column)
         {
-            printf(INTEGER_QUALIFIER " ", mat->data[ind]);
+            printf("%d ", mat->data[ind]);
             ++ind;
         }
 
@@ -240,7 +240,7 @@ void int_matrix_print(const int_matrix *mat)
     }
 }
 
-void int_matrix_make_random(int_matrix *mat, integer max)
+void int_matrix_make_random(int_matrix *mat, int max)
 {
     const size_t zero = (size_t)0;
     size_t ind;
